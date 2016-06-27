@@ -7,42 +7,49 @@
 # All rights reserved - Do Not Redistribute
 #
 
-# default['gatherit']['url'] = 'git@github.com:trociny/gatherit.git'
-
 git "#{Chef::Config[:file_cache_path]}/gatherit" do
   repository node['gatherit']['git_repository']
   revision node['gatherit']['git_revision']
   action :sync
 end
 
-execute 'make gather' do
-  command "make clean; make"
-  cwd "#{Chef::Config[:file_cache_path]}/gatherit"
+directory "#{node['gatherit']['base_path']}/bin" do
+  group node['gatherit']['group']
+  owner node['gatherit']['user']
+  mode 0755
+  not_if { ::File.directory?("#{node['gatherit']['base_path']}/bin") }
 end
 
-file "/usr/local/bin/gather" do
-  content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/gather") }
-  group 'root'
-  owner 'root'
+file "#{node['gatherit']['base_path']}/bin/gather" do
+  content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/gather.pl.in")
+                 .gsub(/@(PERL|CONFILE|MAPFILE|DATADIR)@/,
+                       '@PERL@' => '/usr/bin/perl',
+                       '@CONFILE@' => "'#{node['gatherit']['conf_dir']}/gather.cfg'",
+                       '@MAPFILE@' => "'#{node['gatherit']['conf_dir']}/gather.map'",
+                       '@DATADIR@' => "'#{node['gatherit']['data_dir']}'")
+  }
+  group node['gatherit']['group']
+  owner node['gatherit']['user']
   mode 0755
 end
 
-directory '/usr/local/etc/gather' do
-  owner 'root'
-  group 'root'
+directory File.dirname(node['gatherit']['conf_dir']) do
+  group node['gatherit']['group']
+  owner node['gatherit']['user']
   mode 0755
+  not_if { ::File.directory?(node['gatherit']['conf_dir']) }
 end
 
-file "/usr/local/etc/gather/gather.cfg" do
+file "#{node['gatherit']['conf_dir']}/gather.cfg" do
   content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/gather.cfg") }
-  group 'root'
-  owner 'root'
+  group node['gatherit']['group']
+  owner node['gatherit']['user']
   mode 0644
 end
 
-file "/usr/local/etc/gather/gather.map" do
+file "#{node['gatherit']['conf_dir']}/gather.map" do
   content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/examples/gather.map.#{node['os']}") }
-  group 'root'
-  owner 'root'
+  group node['gatherit']['group']
+  owner node['gatherit']['user']
   mode 0644
 end
