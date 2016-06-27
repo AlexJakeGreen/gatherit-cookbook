@@ -33,16 +33,16 @@ directory '/usr/local/etc/gather' do
   mode 0755
 end
 
-file '/usr/local/etc/gather/gather.cfg' do
+file "/usr/local/etc/gather/gather.cfg" do
   content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/gather.cfg") }
   group 'root'
   owner 'root'
   mode 0644
 end
 
-file '/usr/local/etc/gather/gather.map' do
-  content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/gather.map") }
+file "/usr/local/etc/gather/gather.map" do
+  content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/examples/gather.map.#{node['os']}") }
   group 'root'
   owner 'root'
-  mode 0644  
+  mode 0644
 end
