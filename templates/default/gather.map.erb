@@ -1,0 +1,12 @@
+# $Id$ -*-perl-*-
+#
+# gather map
+
+%map = (
+     <% node['gatherit'].fetch('checks', {}).each do |k, v| %>
+       '<%= k %>' => {
+           'desc' => '<%= v[:description] %>',
+           'cmd' => '<%= v[:command] %>'
+       },
+     <% end %>
+)

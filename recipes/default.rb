@@ -41,14 +41,18 @@ directory File.dirname(node['gatherit']['conf_dir']) do
 end
 
 file "#{node['gatherit']['conf_dir']}/gather.cfg" do
-  content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/gather.cfg") }
+  content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/gather.cfg.in")
+                 .gsub(/@(PERL|CONFILE|MAPFILE|DATADIR)@/,
+                       '@MAPFILE@' => "'#{node['gatherit']['conf_dir']}/gather.map'",
+                       '@DATADIR@' => "'#{node['gatherit']['data_dir']}'")    
+  }
   group node['gatherit']['group']
   owner node['gatherit']['user']
   mode 0644
 end
 
-file "#{node['gatherit']['conf_dir']}/gather.map" do
-  content lazy { IO.read("#{Chef::Config[:file_cache_path]}/gatherit/examples/gather.map.#{node['os']}") }
+template "#{node['gatherit']['conf_dir']}/gather.map" do
+  source 'gather.map.erb'
   group node['gatherit']['group']
   owner node['gatherit']['user']
   mode 0644
