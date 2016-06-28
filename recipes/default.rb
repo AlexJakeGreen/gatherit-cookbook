@@ -7,6 +7,8 @@
 # All rights reserved - Do Not Redistribute
 #
 
+package 'git'
+
 git "#{Chef::Config[:file_cache_path]}/gatherit" do
   repository node['gatherit']['git_repository']
   revision node['gatherit']['git_revision']
