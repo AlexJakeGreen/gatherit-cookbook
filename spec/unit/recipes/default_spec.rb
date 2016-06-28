@@ -6,38 +6,41 @@ require 'chefspec'
 
 describe 'gatherit::default' do
   let(:chef_run) do
-    ChefSpec::SoloRunner.new.converge(described_recipe)
+    ChefSpec::SoloRunner.new(
+      file_cache_path: '/var/chef/cache'
+    ).converge(described_recipe)
+  end
+
+  it 'ensures the git is installed' do
+    expect(chef_run).to install_package('git')
   end
 
   it 'syncs a git with default action' do
-    expect(chef_run).to sync_git("#{Chef::Config[:file_cache_path]}/gatherit")
-    expect(chef_run).to_not sync_git('/tmp/not_default_action')
-  end
-  
-  it 'runs make' do
-    expect(chef_run).to run_execute('make gather')
-  end
-  
-  it 'ensures the config directory exists' do
-    expect(chef_run).to create_directory('/usr/local/etc/gather').with(
-                          user: 'root',
-                          owner: 'root',
-                          mode: 0755)
-  end
-  
-  it 'copies the executable file' do
-    expect(chef_run).to create_file('/usr/local/bin/gather').with(
-                          user: 'root',
-                          owner: 'root',
-                          mode: 0755)
+    expect(chef_run).to sync_git('/var/chef/cache/gatherit')
   end
 
-  it 'creates configuration files' do
-    %w( gather.cfg gather.map ).each do |file| 
-      expect(chef_run).to create_file("/usr/local/etc/gather/#{file}").with(
-                            user: 'root',
-                            owner: 'root',
-                            mode: 0644)
-    end
+  it 'ensures the directory /usr/local/etc is created' do
+    allow(File).to receive(:directory?).and_call_original
+    allow(File).to receive(:directory?).with('/usr/local/etc').and_return(false)
+    expect(chef_run).to create_directory('/usr/local/etc')
+  end
+
+  it 'ensures the directory /usr/local/bin is created' do
+    allow(File).to receive(:directory?).and_call_original
+    allow(File).to receive(:directory?).with('/usr/local/bin').and_return(false)
+    expect(chef_run).to create_directory('/usr/local/bin')
+  end
+
+  it 'copies the executable file' do
+    expect(chef_run).to create_file('/usr/local/bin/gather')
+      .with(user: 'root', owner: 'root', mode: 0755)
+  end
+
+  it 'creates configuration file' do
+    expect(chef_run).to create_file('/usr/local/etc/gather.cfg')
+  end
+
+  it 'creates a map file from template' do
+    expect(chef_run).to create_template('/usr/local/etc/gather.map')
   end
 end

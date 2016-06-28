@@ -1,4 +1,7 @@
 gatherit Cookbook
+
+[![Code Climate](https://codeclimate.com/github/AlexJakeGreen/gatherit-cookbook/badges/gpa.svg)](https://codeclimate.com/github/AlexJakeGreen/gatherit-cookbook)
+
 =================
 Installs https://github.com/trociny/gatherit
 
