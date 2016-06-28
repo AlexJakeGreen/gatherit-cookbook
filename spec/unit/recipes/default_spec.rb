@@ -11,6 +11,10 @@ describe 'gatherit::default' do
     ).converge(described_recipe)
   end
 
+  it 'ensures the git is installed' do
+    expect(chef_run).to install_package('git')
+  end
+
   it 'syncs a git with default action' do
     expect(chef_run).to sync_git('/var/chef/cache/gatherit')
   end
