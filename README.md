@@ -3,18 +3,22 @@ gatherit Cookbook
 [![Code Climate](https://codeclimate.com/github/AlexJakeGreen/gatherit-cookbook/badges/gpa.svg)](https://codeclimate.com/github/AlexJakeGreen/gatherit-cookbook)
 
 =================
-Installs https://github.com/trociny/gatherit
+Installs `gather` from https://github.com/trociny/gatherit
 
 Requirements
 ------------
 
-Attributes
-----------
+###Platforms:
+- CentOS,
+- Red Hat,
+- Amazon Linux
+
+###Chef
+- Chef 11+
 
 Usage
 -----
-#### gatherit::default
-Just include `gatherit` in your node's `run_list`:
+Simply include the `gatherit` recipe where ever you would like `gather` installed
 
 ```json
 {
